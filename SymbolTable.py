@@ -84,26 +84,27 @@ class SymbolTable:
         return self.valuesToKeys.keys()
 
 
-# Testing
-st = SymbolTable(BinarySearchTree)  # For binary search tree as data structure
-# st = SymbolTable(dict)  # For python dict as data structure
-values = ["value1", "value2", "value3", "value4", "BigValue_1245325_BIIIIIG", "value0"]
-keys = []
+if __name__ == '__main__':
+    # Testing
+    st = SymbolTable(BinarySearchTree)  # For binary search tree as data structure
+    # st = SymbolTable(dict)  # For python dict as data structure
+    values = ["value1", "value2", "value3", "value4", "BigValue_1245325_BIIIIIG", "value0"]
+    keys = []
 
-for value in values:
-    keys.append(st + value)
+    for value in values:
+        keys.append(st + value)
 
-print(f"Keys: {keys}\n\n")
-print(f"Values in st: {st.getAllValues()}\n\n")
+    print(f"Keys: {keys}\n\n")
+    print(f"Values in st: {st.getAllValues()}\n\n")
 
-print(f"key mappings in st from stored keys")
-for key in keys:
-    print(f"key: {key} -> value: {st[key]}")
+    print(f"key mappings in st from stored keys")
+    for key in keys:
+        print(f"key: {key} -> value: {st[key]}")
 
-print(f"\nST dict: {st.getAll()}")
-print(f"\nST dict keys: {st.getAllKeys()}")
-print(f"\nST dict values: {st.getAllValues()}")
+    print(f"\nST dict: {st.getAll()}")
+    print(f"\nST dict keys: {st.getAllKeys()}")
+    print(f"\nST dict values: {st.getAllValues()}")
 
-print(f"\nwrong key: {st[124]}")
-print(f"\nwrong key: {st[len(values)]}")
-print(f"\nwrong key: {st[-1]}")
+    print(f"\nwrong key: {st[124]}")
+    print(f"\nwrong key: {st[len(values)]}")
+    print(f"\nwrong key: {st[-1]}")

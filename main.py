@@ -1,25 +1,3 @@
-import uuid
-
-
-class SymbolTable:
-    def __init__(self):
-        self.hashTable = {}
-
-    def __add__(self, other) -> uuid.UUID:
-        itemId = uuid.uuid4()
-
-        self.hashTable[itemId] = other
-
-        return itemId
-
-    def __getitem__(self, item: uuid.UUID):
-        return self.hashTable[item]
-
-
-st = SymbolTable()
-myKey = st + "myValue"
-print(st[myKey])
-
 
 class Node:
     def __init__(self, value):
@@ -115,7 +93,7 @@ class BinarySearchTree:
 
 bst = BinarySearchTree()
 
-keys = [bst + "value1", bst + "value2", bst + 1]
+keys = [bst + "value1", bst + "value2", bst + 1, bst + False]
 
 for key in keys:
     print(key.Navigate())

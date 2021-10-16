@@ -35,10 +35,10 @@ def insert(root: Node, key: int, value):
     return root
 
 
-def search(root: Node, key: int):
+def search(root: Node, key: int, defaultValue=None):
     # If we get here it means that the key is not in the tree
     if root is None:
-        return None
+        return defaultValue
 
     # We found the key inside the tree so we return this node
     if root.itemKey == key:
@@ -76,6 +76,9 @@ class BinarySearchTree:
     def __getitem__(self, key):
         return search(self.root, key)
 
+    def get(self, key, defaultValue=None):
+        return search(self.root, key, defaultValue)
+
     # [] setter for the key -> value pair
     def __setitem__(self, key, value):
         # if the key is not inside the tree then we add it to the list of keys
@@ -93,6 +96,12 @@ class BinarySearchTree:
     def pop(self, key, returnValue=None):
         # TODO: If necessary
         pass
+
+    # Returns a sorted dict with key -> value pairs of the tree in inorder
+    def items(self):
+        nodes = {}
+        inorder(self.root, nodes)
+        return nodes
 
     def __str__(self):
         nodes = {}

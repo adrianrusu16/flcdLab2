@@ -1,4 +1,5 @@
 from BinarySearchTree import BinarySearchTree
+from random import shuffle
 
 
 # Symbol table class.
@@ -34,12 +35,12 @@ class SymbolTable:
         # And the key is returned
         return itemId
 
-    # Tries to return the key of an item in the Symbol Table
+    # Tries to return the value mapped to the "itemKey" in the Symbol Table
     # Complexity: Theta(1) (with dicts)
-    def __getitem__(self, item):
+    def __getitem__(self, itemKey):
         # If the value exists then its key is returned
-        if item in self.keysToValues.keys():
-            return str(self.keysToValues[item])
+        if self.keysToValues.get(itemKey, None):
+            return str(self.keysToValues[itemKey])
 
         # If it does not exist then <None> is returned
         return None
@@ -70,8 +71,8 @@ class SymbolTable:
 
     # Returns the dictionary of the key -> value pairs
     # Complexity: Theta(1) (with dicts)
-    def getAll(self) -> str:
-        return str(self.keysToValues)
+    def getAll(self) -> dict:
+        return self.keysToValues.items()
 
     # Returns a view of the set of all keys
     # Complexity: Theta(1) (with dicts)
@@ -88,7 +89,7 @@ if __name__ == '__main__':
     # Testing
     st = SymbolTable(BinarySearchTree)  # For binary search tree as data structure
     # st = SymbolTable(dict)  # For python dict as data structure
-    values = ["value1", "value2", "value3", "value4", "BigValue_1245325_BIIIIIG", "value0"]
+    values = ["value0", "value1", "value2", "value3", "_BigValue_1245325_BIIIIIG_", "5value5"]
     keys = []
 
     for value in values:
@@ -101,10 +102,15 @@ if __name__ == '__main__':
     for key in keys:
         print(f"key: {key} -> value: {st[key]}")
 
+    print(f"\nkey mappings in st from shuffled list of stored keys")
+    shuffle(keys)
+    for key in keys:
+        print(f"key: {key} -> value: {st[key]}")
+
     print(f"\nST dict: {st.getAll()}")
     print(f"\nST dict keys: {st.getAllKeys()}")
     print(f"\nST dict values: {st.getAllValues()}")
 
-    print(f"\nwrong key: {st[124]}")
-    print(f"\nwrong key: {st[len(values)]}")
-    print(f"\nwrong key: {st[-1]}")
+    print(f"\nInvalid key search of 124: {st[124]}")
+    print(f"\nInvalid key search of {len(values)}: {st[len(values)]}")
+    print(f"\nInvalid key search of -1: {st[-1]}")

@@ -1,0 +1,23 @@
+
+
+def isPrime(n: int) -> bool:
+    if n < 2:
+        return False
+    if n < 4:
+        return True
+
+    for divider in range(5, n // 2 + 1, 2):
+        if n % divider == 0:
+            return False
+
+    return True
+
+
+def main():
+    n = int(input("n = "))
+
+    print(isPrime(n))
+
+
+if __name__ == '__main__':
+    main()

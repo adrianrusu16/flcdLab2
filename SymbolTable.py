@@ -13,13 +13,13 @@ class SymbolTable:
     def __init__(self, dataClass):
         self.keysToValues = dataClass()
         self.valuesToKeys = dataClass()
-        self.uuid = 0
+        self.uuid = 1
 
     # Tries to add an entry to the Symbol Table
     # Complexity: Theta(1) (with dicts)
     def __add__(self, item) -> int:
         # If the item already exists as a value then the key of said value is returned
-        if item in self.valuesToKeys.keys():
+        if self.valuesToKeys.get(item, None) is not None:
             return self.valuesToKeys[item]
 
         # If the item is not present in the dictionary then a uuid is given to it

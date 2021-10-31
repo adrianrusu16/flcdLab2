@@ -12,7 +12,7 @@ Alphabet: [a-zA-Z_0-9]
         - operators + - / // * ** % = == != < <= => > | & ^ ~ ! << >>
             operator ::= "+" | "-" | "/" | "//" | "*" | "**" | "%" | "=" | "+=" | "-=" | "*=" | "/= | "//=" | "**=" |
                          | "==" | "!=" | "<" | "<=" | "=>" | ">" | "|" | "&" | "^" | "~" | "!" | "<<" | ">>"
-        - separators {} [] () \n :
+        - separators {} [] () \n indent dedent :
            separator ::= "{" | "}" | "[" | "]" | "(" | ")" | ":" | "\n"
         - reserved words:
             reservedWords ::= "int" | "bool" | "str" | "list" | "def" | "return" | "if" | "else" | "in" | "True" |
@@ -27,7 +27,7 @@ Alphabet: [a-zA-Z_0-9]
             int ::= 0 | ["+" | "-"] 0 "." digit {digit} | ["+" | "-"] nonZeroDigit {digit} ["." digit {digit}]
 
         - characters
-            str ::= """ {letter | digit | underscore} """
+            str ::= """ {letter | digit | underscore | whitespace} """
 
         - booleans
             bool ::= "True" | "False"
@@ -38,6 +38,10 @@ Alphabet: [a-zA-Z_0-9]
 ------------------------------------------- Syntax.in ---------------------------------------------
 
 
+
+
+indent ::= a new \t in the indentation
+dedent ::= missing at least 1 \t in the indentation compared to the previous one
 
 program ::= functionList
 
@@ -53,7 +57,7 @@ string ::= "str" | fStr
 fStr ::= "f"" { "str" | "{" expression "}"} """
 listDecl ::= "[" [type1] "]"
 
-cmpdStmt ::= "{" stmtList "}"
+cmpdStmt ::= indent stmtList dedent
 stmtList ::= stmt | stmt stmtList
 stmt ::= simpleStmt | structStmt
 simpleStmt ::= assignStmt | ioStmt
@@ -151,7 +155,7 @@ def main(): {
 }
 
 
-if __name__ == '__main__': {
+if __name__ == "__main__": {
     main()
 }
 
@@ -181,7 +185,7 @@ def main(): {
 }
 
 
-if __name__ == '__main__': {
+if __name__ == "__main__": {
     main()
 }
 
@@ -212,7 +216,7 @@ def main(): {
 }
 
 
-if __name__ == '__main__': {
+if __name__ == "__main__": {
     main()
 }
 
@@ -236,6 +240,6 @@ def main(): {
 }
 
 
-if __name__ == '__main__': {
+if __name__ == "__main__": {
     main()
 }

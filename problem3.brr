@@ -10,15 +10,15 @@ def numberSum(listOfNumbers: list[int]) -> int:
 
 
 def main():
-    n = int(input("Number of Integers: "))
+    n = int(input("Number of Integers= "))
 
     listOfNumbers = []
 
     for index in range(n):
-        listOfNumbers.append(int(input(f"#{index + 1}: ")))
+        listOfNumbers.append(int(input()))
 
     print(numberSum(listOfNumbers))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

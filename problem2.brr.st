@@ -1,0 +1,8 @@
+(1, 'isPrime')
+(2, 'n')
+(3, 'divider')
+(4, 'range')
+(5, 'main')
+(6, 'input')
+(7, 'print')
+(8, '__name__')

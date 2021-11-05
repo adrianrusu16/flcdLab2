@@ -1,17 +1,23 @@
 
 
 def gcd(a: int, b: int) -> int:
+{
     if b == 0:
         return a
     return gcd(b, a % b)
+}
 
 
 def main():
+{
     a = int(input("ă = "))  # 'ă' is not inside the interpretor's dictionary
     b = int(input('b = '))  # strings must begin and end on double quotes <">
 
     print(gcd(a, b))
+}
 
 
 if __name__ == "__main__":
+{
     main()
+}

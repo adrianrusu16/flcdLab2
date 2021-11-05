@@ -1,15 +1,18 @@
 
 
 def numberSum(listOfNumbers: list[int]) -> int:
+{
     summation = 0
 
     for number in listOfNumbers:
         summation += number
 
     return summation
+}
 
 
 def main():
+{
     n = int(input("Number of Integers= "))
 
     listOfNumbers = []
@@ -18,7 +21,10 @@ def main():
         listOfNumbers.append(int(input()))
 
     print(numberSum(listOfNumbers))
+}
 
 
 if __name__ == "__main__":
+{
     main()
+}

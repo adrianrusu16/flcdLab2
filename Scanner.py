@@ -8,13 +8,11 @@ from tokenize import TokenInfo, generate_tokens
 class Scanner:
     # Constants
     RESERVED_KEYWORD = 1
-    INDENT = 2
-    DEDENT = 3
-    OPERATOR = 4
-    NUMBER = 5
-    STRING = 6
-    NEWLINE = 7  # end of statement
-    IDENTIFIER = 8  # end of statement
+    OPERATOR = 2
+    NUMBER = 3
+    STRING = 4
+    NEWLINE = 5  # end of statement
+    IDENTIFIER = 6
 
     # Init empty scanner
     def __init__(self):
@@ -38,8 +36,6 @@ class Scanner:
         self.tokenTypes = {
             1: self.checkName,
             54: self.checkOp,
-            5: self.checkIndent,
-            6: self.checkDedent,
             2: self.checkNumber,
             3: self.checkString,
             4: self.checkNewline
@@ -111,14 +107,6 @@ class Scanner:
             return
 
         self.pif.append((self.OPERATOR, token.string))
-
-    # Checks whether token is an indent
-    def checkIndent(self, token: TokenInfo):
-        self.pif.append((self.INDENT, token.string))
-
-    # Checks whether token is an dedent
-    def checkDedent(self, token: TokenInfo):
-        self.pif.append((self.DEDENT, token.string))
 
     # Checks whether token is an integer
     def checkNumber(self, token: TokenInfo):

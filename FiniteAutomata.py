@@ -1,6 +1,8 @@
 import json
 from collections import namedtuple
 
+from Transition import Transition
+
 
 class FiniteAutomata:
 
@@ -9,7 +11,7 @@ class FiniteAutomata:
         self.alphabet = alphabet
         self.initialState = initialState
         self.finalStates = finalStates
-        self.transitions = transitions
+        self.transitions = [Transition(transition) for transition in transitions] if transitions is not None else None
         self.fileName = fileName
 
         self.menuLoop = False
@@ -19,6 +21,7 @@ class FiniteAutomata:
             '2': self.printElement,
             '3': self.printElement,
             '4': self.printElement,
+            '5': self.startSequence,
             '0': self.stopMenuLoop
         }
 
@@ -27,6 +30,7 @@ class FiniteAutomata:
             '2': "Show the alphabet.",
             '3': "Show the transitions.",
             '4': "Show the set of final states.",
+            '5': "Parse sequence",
             '0': "Exit."
         }
 
@@ -49,6 +53,34 @@ class FiniteAutomata:
             finiteAutomata = json.load(f, object_hook=finiteAutomataDecoder)
             self.__init__(*finiteAutomata)
 
+    def parseSequence(self, sequence: str):
+        current = self.initialState
+        print(current)
+        for element in sequence:
+            current = self.makeTransition(current, element)
+            if current is None:
+                print('Sequence is not valid for this automata.')
+                return
+
+            print(current)
+
+        if current in self.finalStates:
+            print('Sequence successfully parsed.')
+            return
+
+        print('Sequence does not end on a final state.')
+
+    def makeTransition(self, start, element):
+        for transition in self.transitions:
+            if transition.start == start and transition.load == element:
+                return transition.end
+
+        return None
+
+    def startSequence(self, _):
+        sequence = input("Sequence: ")
+        self.parseSequence(sequence)
+
     def showMenu(self):
         self.menuLoop = True
         while self.menuLoop:
@@ -56,7 +88,7 @@ class FiniteAutomata:
                 print(f'{option}. {description}')
 
             option = input('>>>')
-            self.menuOptions[option](option)
+            self.menuOptions.get(option, self.menuOptionError)(option)
 
     def printElement(self, option):
         print(self.__getattribute__(self.prints[option]))
@@ -64,13 +96,16 @@ class FiniteAutomata:
     def stopMenuLoop(self, _):
         self.menuLoop = False
 
+    def menuOptionError(self, option):
+        print(f'Option <{option}> does not exist.')
+
 
 def finiteAutomataDecoder(finiteAutomataDict):
     return namedtuple('FiniteAutomata', finiteAutomataDict.keys())(*finiteAutomataDict.values())
 
 
 def main():
-    FiniteAutomata(fileName="fa.in")
+    fa = FiniteAutomata(fileName="fa.in")
 
 
 if __name__ == '__main__':

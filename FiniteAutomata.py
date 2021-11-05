@@ -45,42 +45,55 @@ class FiniteAutomata:
             self.readFa()
             self.showMenu()
 
+    # Reads the given fa from a file, the fa must be in a json format
     def readFa(self):
         if self.fileName is None:
             return
 
+        # Parses the json formatted fa and sets the attributes of the fa
         with open(self.fileName) as f:
             finiteAutomata = json.load(f, object_hook=finiteAutomataDecoder)
             self.__init__(*finiteAutomata)
 
+    # Parses the sequence given as a string
     def parseSequence(self, sequence: str):
+        # Initializes the current state
         current = self.initialState
         print(current)
+        # Loops over the sequence
         for element in sequence:
+            # Tries to make a transition
             current = self.makeTransition(current, element)
+            # There is no valid transition
             if current is None:
                 print('Sequence is not valid for this automata.')
                 return
 
             print(current)
 
+        # After the sequence is over, check is we are in a final state
         if current in self.finalStates:
             print('Sequence successfully parsed.')
             return
 
         print('Sequence does not end on a final state.')
 
+    # Tries to make a transition, if it succeeds then the next state is returned otherwise None
     def makeTransition(self, start, element):
+        # Loops over the available transitions
         for transition in self.transitions:
+            # If there is a transition starting with that state with that load the following state is returned otherwise None
             if transition.start == start and transition.load == element:
                 return transition.end
 
         return None
 
+    # Gets user input for the sequence and starts parsing it
     def startSequence(self, _):
         sequence = input("Sequence: ")
         self.parseSequence(sequence)
 
+    # Shows the menu
     def showMenu(self):
         self.menuLoop = True
         while self.menuLoop:
@@ -100,6 +113,7 @@ class FiniteAutomata:
         print(f'Option <{option}> does not exist.')
 
 
+# Helper function for converting json to class
 def finiteAutomataDecoder(finiteAutomataDict):
     return namedtuple('FiniteAutomata', finiteAutomataDict.keys())(*finiteAutomataDict.values())
 

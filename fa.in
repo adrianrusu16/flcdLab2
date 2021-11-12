@@ -10,12 +10,14 @@
    ],
    "initialState":"p",
    "finalStates":[
-      "r"
+      "r",
+      "p"
    ],
    "transitions":[
       "p -> 0 -> q",
       "p -> 1 -> p",
       "q -> 1 -> r",
+      "r -> 0 -> r",
       "r -> 0 -> r"
    ]
 }

@@ -1,0 +1,43 @@
+The finite automata follows the json formatting.
+It needs the following fields with the respective naming conventions:
+    "states" - a list of all states (strings)
+    "alphabet" - a list of the alphabet
+    "initialState" - is a single object (string) from the states field
+    "finalStates" - a list of all final states from the states field
+    "transitions" - a list of string of the following format "<state> -> <alphabet> -> <state>" where <state> is in the set of states and <alphabet> is in the set of alphabets
+
+
+ex:
+{
+   "states":[
+      "p",
+      "q",
+      "r"
+   ],
+   "alphabet":[
+      0,
+      1
+   ],
+   "initialState":"p",
+   "finalStates":[
+      "r"
+   ],
+   "transitions":[
+      "p -> 0 -> q",
+      "p -> 1 -> p",
+      "q -> 1 -> r",
+      "r -> 0 -> r"
+   ]
+}
+
+
+BNF:
+    DFA ::= '{' states ',' alphabet ',' initialState ',' finalStates ',' transitions '}'
+    states ::= "states:[" state { ',' state } "]"
+    state ::= '"' ''a' | 'b' | ... | 'z' '"'
+    alphabet ::= "alphabet:[" alph { ',' alph } "]"
+    alph ::= '0' | '1' | ... | '9'
+    initialState ::= state
+    finalStates ::= states
+    transitions ::= "transitions:[" transition { ',' transition } "]"
+    transition ::= '"' state ' -> ' alph ' -> ' state '"'

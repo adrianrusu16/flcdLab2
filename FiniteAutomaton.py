@@ -4,7 +4,7 @@ from collections import namedtuple
 from Transition import Transition
 
 
-class FiniteAutomata:
+class FiniteAutomaton:
 
     def __init__(self, states=None, alphabet=None, initialState=None, finalStates=None, transitions=None, fileName=None):
         self.states = states
@@ -14,7 +14,7 @@ class FiniteAutomata:
         self.transitions = [Transition(transition) for transition in transitions] if transitions is not None else None
         self.fileName = fileName
 
-        self.menuLoop = False
+        self.menuLoop = True
 
         self.menuOptions = {
             '1': self.printElement,
@@ -54,6 +54,21 @@ class FiniteAutomata:
         with open(self.fileName) as f:
             finiteAutomata = json.load(f, object_hook=finiteAutomataDecoder)
             self.__init__(*finiteAutomata)
+
+        # Check for valid transitions
+        self.checkTransitions()
+
+    def checkTransitions(self):
+        for transition in self.transitions:
+            if transition.start not in self.states:
+                print(f"Transition starting state must be defined as a state: {transition.start}")
+                self.menuLoop = False
+            if transition.end not in self.states:
+                print(f"Transition ending state must be defined as a state: {transition.end}")
+                self.menuLoop = False
+            if transition.load not in self.alphabet:
+                print(f"Transition load must be defined in the alphabet: {transition.load} {self.alphabet}")
+                self.menuLoop = False
 
     # Parses the sequence given as a string
     def parseSequence(self, sequence: str):
@@ -95,7 +110,6 @@ class FiniteAutomata:
 
     # Shows the menu
     def showMenu(self):
-        self.menuLoop = True
         while self.menuLoop:
             for option, description in self.menuOptionsDescriptions.items():
                 print(f'{option}. {description}')
@@ -118,8 +132,16 @@ def finiteAutomataDecoder(finiteAutomataDict):
     return namedtuple('FiniteAutomata', finiteAutomataDict.keys())(*finiteAutomataDict.values())
 
 
+def toSets(o):
+    if isinstance(o, list):
+        return {toSets(v) for v in o}
+    elif isinstance(o, dict):
+        return {k: toSets(v) for k, v in o.items()}
+    return o
+
+
 def main():
-    fa = FiniteAutomata(fileName="fa.in")
+    fa = FiniteAutomaton(fileName="fa.in")
 
 
 if __name__ == '__main__':

@@ -8,4 +8,4 @@ class Transition:
         return str(self)
 
     def __str__(self):
-        return f'{self.start} -> {self.end}'
+        return f'{self.start} -> {self.load} -> {self.end}'

@@ -33,11 +33,11 @@ ex:
 
 BNF:
     DFA ::= '{' states ',' alphabet ',' initialState ',' finalStates ',' transitions '}'
-    states ::= "states:[" state { ',' state } "]"
+    states ::= 'states:[' state { ',' state } ']'
     state ::= '"' ''a' | 'b' | ... | 'z' '"'
-    alphabet ::= "alphabet:[" alph { ',' alph } "]"
+    alphabet ::= 'alphabet:[' alph { ',' alph } ']'
     alph ::= '0' | '1' | ... | '9'
     initialState ::= state
     finalStates ::= states
-    transitions ::= "transitions:[" transition { ',' transition } "]"
+    transitions ::= 'transitions:[' transition { ',' transition } ']'
     transition ::= '"' state ' -> ' alph ' -> ' state '"'

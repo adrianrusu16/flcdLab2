@@ -7,11 +7,11 @@ from Transition import Transition
 class FiniteAutomaton:
 
     def __init__(self, states=None, alphabet=None, initialState=None, finalStates=None, transitions=None, fileName=None):
-        self.states = states
-        self.alphabet = alphabet
+        self.states = set(states) if states is not None else None
+        self.alphabet = set(alphabet) if alphabet is not None else None
         self.initialState = initialState
-        self.finalStates = finalStates
-        self.transitions = [Transition(transition) for transition in transitions] if transitions is not None else None
+        self.finalStates = set(finalStates) if finalStates is not None else None
+        self.transitions = {Transition(transition) for transition in transitions} if transitions is not None else None
         self.fileName = fileName
 
         self.menuLoop = True
@@ -67,7 +67,7 @@ class FiniteAutomaton:
                 print(f"Transition ending state must be defined as a state: {transition.end}")
                 self.menuLoop = False
             if transition.load not in self.alphabet:
-                print(f"Transition load must be defined in the alphabet: {transition.load} {self.alphabet}")
+                print(f"Transition load must be defined in the alphabet: {transition.load}")
                 self.menuLoop = False
 
     # Parses the sequence given as a string

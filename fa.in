@@ -2,11 +2,13 @@
    "states":[
       "p",
       "q",
-      "r"
+      "r",
+      "q"
    ],
    "alphabet":[
       0,
-      1
+      1,
+      0
    ],
    "initialState":"p",
    "finalStates":[

@@ -1,0 +1,25 @@
+{
+  "nonTerminals": [
+    "S",
+    "A",
+    "B",
+    "C"
+  ],
+  "terminals": [
+    "(",
+    ")",
+    "+",
+    "*",
+    "int"
+  ],
+  "start": "S",
+  "productions": [
+    "S->A B",
+    "A->( S )",
+    "A->int C",
+    "B->+ S",
+    "B->E",
+    "C->* A",
+    "C->E"
+  ]
+}

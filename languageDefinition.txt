@@ -43,7 +43,7 @@ Alphabet: [a-zA-Z_0-9]
 indent ::= '{'
 dedent ::= '}'
 
-program ::= functionList
+program ::= 'if __name__ == "__main__":' functionList
 
 functionList ::= function | function functionList
 

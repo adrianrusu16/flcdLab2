@@ -132,14 +132,6 @@ def finiteAutomataDecoder(finiteAutomataDict):
     return namedtuple('FiniteAutomata', finiteAutomataDict.keys())(*finiteAutomataDict.values())
 
 
-def toSets(o):
-    if isinstance(o, list):
-        return {toSets(v) for v in o}
-    elif isinstance(o, dict):
-        return {k: toSets(v) for k, v in o.items()}
-    return o
-
-
 def main():
     fa = FiniteAutomaton(fileName="fa.in")
 

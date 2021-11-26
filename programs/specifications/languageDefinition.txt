@@ -2,21 +2,21 @@ Alphabet: [a-zA-Z_0-9]
     a. Upper (A-Z) and lower (a-z) case letters of the english alphabet
         letter ::= [a-zA-Z]
     b. Underscore
-        underscore ::= "_"
+        underscore ::= '_'
     c. Decimal digits (0-9)
         nonZeroDigit ::= [1-9]
-        digit ::= "0" | nonZeroDigit
+        digit ::= '0' | nonZeroDigit
 
 1. Lexico:
     a. Special symbols:
         - operators + - / // * ** % = == != < <= => > | & ^ ~ ! << >>
-            operator ::= "+" | "-" | "/" | "//" | "*" | "**" | "%" | "=" | "+=" | "-=" | "*=" | "/= | "//=" | "**=" |
-                         | "==" | "!=" | "<" | "<=" | "=>" | ">" | "|" | "&" | "^" | "~" | "!" | "<<" | ">>"
+            operator ::= '+' | '-' | '/' | '//' | '*' | '**' | '%' | '=' | '+=' | '-=' | '*=' | '/=' | '//=' | '**=' |
+                         | '==' | '!=' | '<' | '<=' | '=>' | '>'
         - separators {} [] () \n indent dedent :
-           separator ::= "{" | "}" | "[" | "]" | "(" | ")" | ":" | "\n"
+           separator ::= '{' | '}' | '[' | ']' | '(' | ')' | ':' | '\n'
         - reserved words:
-            reservedWords ::= "int" | "bool" | "str" | "list" | "def" | "return" | "if" | "else" | "in" | "True" |
-                              "False" | "input" | "while" | "for" | "range" | "and" | "or" | "not" | "__main__"
+            reservedWords ::= 'int' | 'bool' | 'str' | 'list' | 'def' | 'return' | 'if' | 'else' | 'in' | 'True' |
+                              'False' | 'input' | 'while' | 'for' | 'range' | 'and' | 'or' | 'not' | '__main__'
 
     b. Identifiers
         -a sequence of letters and  digits, such that the first character is a letter; the rule is:
@@ -24,13 +24,13 @@ Alphabet: [a-zA-Z_0-9]
 
     c. Constants
         - numbers
-            int ::= 0 | ["+" | "-"] 0 "." digit {digit} | ["+" | "-"] nonZeroDigit {digit} ["." digit {digit}]
+            int ::= 0 | ['+' | '-'] 0 '.' digit {digit} | ['+' | '-'] nonZeroDigit {digit} ['.' digit {digit}]
 
         - characters
-            str ::= """ {letter | digit | underscore | whitespace} """
+            str ::= '"' {letter | digit | underscore | whitespace} '"'
 
         - booleans
-            bool ::= "True" | "False"
+            bool ::= 'True' | 'False'
 
 
 
@@ -43,41 +43,39 @@ Alphabet: [a-zA-Z_0-9]
 indent ::= '{'
 dedent ::= '}'
 
-program ::= 'if __name__ == "__main__":' functionList
+program ::= 'if __name__ == \"__main__\":' functionList
 
 functionList ::= function | function functionList
 
-function ::= def IDENTIFIER "(" [parameter] | parameter "," parameter {"," parameter} ")" [returnType] ":"
-parameter ::= IDENTIFIER [":" type]
-returnType ::= "->" type
+function ::= def IDENTIFIER '(' [parameter] | parameter ',' parameter {',' parameter} ')' [returnType] ':'
+parameter ::= IDENTIFIER [':' type]
+returnType ::= '->' type
 
-type ::= type1 | list"[" [type1] "]"
-type1 ::= "int" | "bool" | string
-string ::= "str" | fStr
-fStr ::= "f"" { "str" | "{" expression "}"} """
-listDecl ::= "[" [type1] "]"
+type ::= type1 | 'list' '[' [type1] ']'
+type1 ::= 'int' | 'bool' | 'str'
+listDecl ::= '[' [type1] ']'
 
 cmpdStmt ::= indent stmtList dedent
 stmtList ::= stmt | stmt stmtList
 stmt ::= simpleStmt | structStmt
 simpleStmt ::= assignStmt | ioStmt
 assignStmt ::= IDENTIFIER assignOperator expression
-assignOperator ::= "=" | "+=" | "-=" | "*=" | "/=" | "//=" | "**="
-expression ::= expression ("+" | "-") term | term
-term ::= term ("*" | "/" | "//") term1 | term1
-term1 ::= term1 "**" factor | factor
-factor ::= "(" expression ")" | IDENTIFIER
+assignOperator ::= '=' | '+=' | '-=' | '*=' | '/=' | '//=' | '**='
+expression ::= expression ('+' | '-') term | term
+term ::= term ('*' | '/' | '//') term1 | term1
+term1 ::= term1 '**' factor | factor
+factor ::= '(' expression ')' | IDENTIFIER
 ioStmt ::= inputStmt | outputStmt
-inputStmt ::= input "(" [string] ")"
-outputStmt ::= print "(" IDENTIFIER ")"
+inputStmt ::= input '(' [string] ')'
+outputStmt ::= print '(' IDENTIFIER ')'
 structStmt ::= cmpdStmt | ifStmt | whileStmt | forRangeStmt
 
-ifStmt ::= "if" condition ":" stmt [ "else" ":" stmt]
-whileStmt ::= "while" condition ":" stmt
-forRangeStmt ::= "for" identifier "in range(" [expression ","] expression ["," expression] "):" stmt
+ifStmt ::= 'if' condition ':' stmt [ 'else' ':' stmt]
+whileStmt ::= 'while' condition ':' stmt
+forRangeStmt ::= 'for' identifier 'in range(' [expression ','] expression [',' expression] '):' stmt
 
 condition ::= expression RELATION expression
-RELATION ::= "==" | "!=" | "<" | "<=" | "=>" | ">" | "and" | "or"
+RELATION ::= '==' | '!=' | '<' | '<=' | '=>' | '>' | 'and' | 'or'
 
 
 
@@ -121,7 +119,7 @@ or
 ,
 .
 ->
-"
+'
 int
 str
 bool
@@ -150,14 +148,14 @@ def gcd(a: int, b: int) -> int:
 
 def main():
 {
-    a = int(input("a = "))
-    b = int(input("b = "))
+    a = int(input('a = '))
+    b = int(input('b = '))
 
     print(gcd(a, b))
 }
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 {
     main()
 }
@@ -184,13 +182,13 @@ def isPrime(n: int) -> bool:
 
 def main():
 {
-    n = int(input("n = "))
+    n = int(input('n = '))
 
     print(isPrime(n))
 }
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 {
     main()
 }
@@ -213,18 +211,18 @@ def numberSum(listOfNumbers: list[int]) -> int:
 
 def main():
 {
-    n = int(input("Number of Integers: "))
+    n = int(input('Number of Integers: '))
 
     listOfNumbers = []
 
     for index in range(n):
-        listOfNumbers.append(int(input(f"#{index + 1}: ")))
+        listOfNumbers.append(int(input(f'#{index + 1}: ')))
 
     print(numberSum(listOfNumbers))
 }
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 {
     main()
 }
@@ -244,14 +242,14 @@ def gcd(a: int, b: int) -> int:
 
 def main():
 {
-    a = int(input('ă = "))  # 'ă' is not inside the interpretor's dictionary and strings must begin and end on double quotes <">
-    b = int(input("b = "))
+    a = int(input('ă = '))  # 'ă' is not inside the interpretor's dictionary and strings must begin and end on double quotes <'>
+    b = int(input('b = '))
 
     print(gcd(a, b))
 }
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 {
     main()
 }

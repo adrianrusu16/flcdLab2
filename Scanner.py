@@ -1,5 +1,8 @@
 import os
+import tokenize
 
+from io import StringIO
+from ScannerTokenException import ScannerTokenException
 from SymbolTable import SymbolTable
 from re import fullmatch
 from tokenize import TokenInfo, generate_tokens
@@ -28,17 +31,23 @@ class Scanner:
         self.booleans = ("True", "False")
 
         # Allowed operators
-        self.operators = ['+', '-', '/', '//', '%', '*', '**', '=', '+=', '-=', '/=', '//=', '**=', '<', '<=', '==', '=>', '>', 'and', 'or', '!', '~', '&', '|', '^', '<<', '>>', '{', '}', '[', ']', '(', ')', ':', ',', '.', '->', '"']
+        self.operators = ['+', '-', '/', '//', '%', '*', '**', '=', '+=', '-=', '/=', '//=', '**=', '<', '<=', '==',
+                          '=>', '>', 'and', 'or', '{', '}', '[', ']', '(', ')', ':', ',', '.', '->', '"']
         # Reserved keywords
-        self.reservedKeywords = ['int', 'str', 'bool', 'True', 'False', 'def', 'return', 'if', 'else', 'while', 'for', 'in']
+        self.reservedKeywords = ['int', 'str', 'bool', 'True', 'False', 'def', 'return', 'if', 'else', 'while', 'for',
+                                 'in']
 
         # Token types we can find in file.brr
         self.tokenTypes = {
-            1: self.checkName,
-            54: self.checkOp,
-            2: self.checkNumber,
-            3: self.checkString,
-            4: self.checkNewline
+            tokenize.NAME: self.checkName,
+            tokenize.OP: self.checkOp,
+            tokenize.NUMBER: self.checkNumber,
+            tokenize.STRING: self.checkString,
+            tokenize.NEWLINE: self.checkNewline
+        }
+
+        self.blankTokenTypes = {
+            tokenize.NEWLINE
         }
 
         # Original file path
@@ -62,8 +71,7 @@ class Scanner:
 
     # Called if an error occurs during scanning
     def raiseError(self, token: TokenInfo):
-        print(f"""Lexical error at line: {token.start[0]}  <{token.start[1]},{token.end[1]}>
-    Error processing token: {token.string}
+        raise ScannerTokenException(f"""Error processing token: {token.string}
         Inside file: {self.file}""")
 
     # Scan the file
@@ -91,6 +99,14 @@ class Scanner:
 
         # Delete temporary file because it is not needed anymore
         self.deleteTemp()
+
+    def parseString(self, string):
+        return tuple(
+            filter(
+                lambda token: token.type in self.tokenTypes.keys() and token.type not in self.blankTokenTypes,
+                generate_tokens(StringIO(string).readline)
+            )
+        )
 
     # Checks whether token is a reserved keyword or an identifier
     def checkName(self, token: TokenInfo):

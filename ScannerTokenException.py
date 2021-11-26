@@ -1,0 +1,2 @@
+class ScannerTokenException(Exception):
+    pass

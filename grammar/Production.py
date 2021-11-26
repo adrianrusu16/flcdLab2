@@ -36,3 +36,6 @@ class Production:
             right = right[:-3]
 
         return f'{str(self.left)} ::= {right}'
+
+    # def __iter__(self):
+    #     return self.left, self.right

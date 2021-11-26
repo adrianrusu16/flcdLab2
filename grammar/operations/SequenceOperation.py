@@ -3,7 +3,7 @@ from grammar.operations.Operation import Operation
 
 class SequenceOperation(Operation):
 
-    def __init__(self, load: list[Operation]):
+    def __init__(self, load: tuple[Operation]):
         super().__init__(load)
 
     def __call__(self):

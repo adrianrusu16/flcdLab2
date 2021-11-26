@@ -1,5 +1,5 @@
 import json
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from typing import Optional
 from ordered_set import OrderedSet
 
@@ -34,6 +34,7 @@ class Grammar:
         if fileName is not None:
             self.fileName = fileName
             self.readGrammar()
+            print(self.isCFG())
 
     # Reads the given fa from a file, the fa must be in a json format
     def readGrammar(self):
@@ -45,23 +46,23 @@ class Grammar:
             grammar = json.load(f, object_hook=grammarDecoder)
             self.__init__(*grammar)
 
-    def parseTransitions(self, transitions) -> Optional[OrderedSet]:
+    def parseTransitions(self, transitions) -> Optional[OrderedDict]:
         if transitions is None:
             return None
 
-        transitionsList = OrderedSet()
+        productionsDict = OrderedDict()
 
         for transition in transitions:
             left, right = transition.split("::=")
 
-            transitionsList.add(
-                Production(
-                    left=self.checkLeft(left.strip() + ' '),
-                    right=self.checkRight(right.strip())
-                )
+            production = Production(
+                left=self.checkLeft(left.strip() + ' '),
+                right=self.checkRight(right.strip())
             )
 
-        return transitionsList
+            productionsDict[production.left.load] = production
+
+        return productionsDict
 
     def checkLeft(self, left: str) -> SequenceOperation:
         return self.getOps(left)
@@ -123,11 +124,11 @@ class Grammar:
                     lastSpace = index
                     finishedSpecial = False
 
-        return SequenceOperation(ops)
+        return SequenceOperation(tuple(ops))
 
     def isCFG(self) -> bool:
         for production in self.productions:
-            if not production.isCFG():
+            if len(production) != 1:
                 return False
 
         return True
@@ -139,12 +140,25 @@ class Grammar:
         print(*self.terminals, sep='\n')
 
     def printProductions(self, nonTerminal=None):
-        print(*self.productions, sep='\n') if nonTerminal is None else self.printNonTerminalProduction(nonTerminal)
+        print(*self.productions.values(), sep='\n') if nonTerminal is None else self.printNonTerminalProduction(nonTerminal)
 
     def printNonTerminalProduction(self, nonTerminal):
         for production in self.productions:
             if production.isOnlyNonTerminal(nonTerminal):
                 print(production)
+
+    def getTerminalsFromProduction(self, nonTerminal):
+        production = self.productions.get(tuple([NonTerminal(nonTerminal)]), None)
+        if production is None:
+            return None
+
+        terminals = OrderedSet()
+        for sequence in production.right:
+            for operation in sequence.load:
+                if isinstance(operation, Terminal):
+                    terminals.add(operation)
+
+        return terminals
 
 
 # Helper function for converting json to class
@@ -154,9 +168,6 @@ def grammarDecoder(grammarDict):
 
 def main():
     g = Grammar(fileName="g2.txt")
-    g.printProductions()
-    # for n in g.nonTerminals:
-    #     g.printNonTerminalProduction(n)
 
 
 if __name__ == '__main__':

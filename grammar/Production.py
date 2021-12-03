@@ -35,5 +35,5 @@ class Production:
 
         return f'{str(self.left)} ::= {right}'
 
-    # def __iter__(self):
-    #     return self.left, self.right
+    def items(self):
+        return self.left, self.right

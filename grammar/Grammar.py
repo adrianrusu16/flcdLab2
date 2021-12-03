@@ -91,19 +91,6 @@ class Grammar:
             if production.isOnlyNonTerminal(nonTerminal):
                 print(production)
 
-    def getTerminalsFromProduction(self, nonTerminal):
-        production = self.productions.get(tuple([NonTerminal(nonTerminal)]), None)
-        if production is None:
-            return None
-
-        terminals = OrderedSet()
-        for sequence in production.right:
-            for operation in sequence.load:
-                if isinstance(operation, Terminal):
-                    terminals.add(operation)
-
-        return terminals
-
 
 # Helper function for converting json to class
 def grammarDecoder(grammarDict):

@@ -1,10 +1,8 @@
 from ordered_set import OrderedSet
 
-from grammar.operations.SequenceOperation import SequenceOperation
-
 
 class Production:
-    def __init__(self, left: SequenceOperation, right: OrderedSet[SequenceOperation]):
+    def __init__(self, left, right: OrderedSet):
         self.left = left
         self.right = right
 

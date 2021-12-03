@@ -4,12 +4,6 @@ from typing import Optional
 from ordered_set import OrderedSet
 
 from GrammarParsingException import GrammarParsingException
-from grammar.operations.SequenceOperation import SequenceOperation
-from operations.NonTerminal import NonTerminal
-from operations.Terminal import Terminal
-from operations.ChooseOneOperation import *
-from operations.OptionalOperation import *
-from operations.RepeatOperation import *
 from Production import Production
 
 
@@ -20,16 +14,7 @@ class Grammar:
         self.terminals = OrderedSet(alphabet) if alphabet is not None else None
         self.start = initialState
         self.productions = self.parseTransitions(transitions)
-
-        self.specialOpsSE = {'(': ')', '[': ']', '{': '}'}
-        self.specialOpsES = {v: k for k, v in self.specialOpsSE.items()}
-
-        self.opMap = {
-            "'": Terminal,
-            '(': ChooseOneOperation,
-            '[': OptionalOperation,
-            '{': RepeatOperation
-        }
+        self.types = []
 
         if fileName is not None:
             self.fileName = fileName
@@ -56,75 +41,34 @@ class Grammar:
             left, right = transition.split("::=")
 
             production = Production(
-                left=self.checkLeft(left.strip() + ' '),
+                left=self.checkLeft(left.strip()),
                 right=self.checkRight(right.strip())
             )
 
-            productionsDict[production.left.load] = production
+            productionsDict[production.left] = production
 
         return productionsDict
 
-    def checkLeft(self, left: str) -> SequenceOperation:
-        return self.getOps(left)
+    def checkLeft(self, left: str):
+        return tuple(left.strip().split(' '))
 
-    def checkRight(self, right: str) -> OrderedSet[SequenceOperation]:
+    def checkRight(self, right: str) -> OrderedSet:
         rights = right.split("|")
 
         ops = OrderedSet()
 
         for right in rights:
-            ops.add(self.getOps(right.strip() + ' '))
+            ops.add(tuple(right.strip().split(' ')))
 
         return ops
 
-    def getOps(self, string: str) -> SequenceOperation:
-        ops = []
-        specials = []
-        lastSpace = -1
-        isString = False
-        finishedSpecial = False
-        for index, character in enumerate(string):
-            if character == "'":
-                if not isString:
-                    specials.append((character, index))
-                else:
-                    special = specials.pop(-1)
-                    ops.append(self.opMap.get(special[0])(string[special[1]:index+1]))
-                    finishedSpecial = True
-
-                isString = not isString
-            elif not isString:
-                if self.specialOpsSE.get(character, None) is not None:  # starting symbol
-                    specials.append((character, index))
-
-                elif self.specialOpsES.get(character, None) is not None:  # ending symbol
-                    if len(specials) == 0:
-                        raise GrammarParsingException("Closing symbol does not have an opening one")
-
-                    if self.specialOpsSE.get(specials[-1][0]) != character:
-                        raise GrammarParsingException("Closing symbol does not correspond to its opening symbol")
-
-                    special = specials.pop(-1)
-                    ops.append(self.opMap.get(special[0])(self.getOps(string[special[1]+1:index])))
-                    finishedSpecial = True
-
-                elif character == " ":
-                    if not finishedSpecial:
-                        if len(specials) == 0:
-                            op = string[lastSpace+1:index]
-                            if op in self.nonTerminals:
-                                ops.append(NonTerminal(op))
-
-                            elif op in self.terminals:
-                                ops.append(Terminal(op))
-
-                            else:
-                                raise GrammarParsingException("Operand is neither defined as a terminal nor non-terminal")
-
-                    lastSpace = index
-                    finishedSpecial = False
-
-        return SequenceOperation(tuple(ops))
+    def isTerminal(self, string: str):
+        if string in self.nonTerminals:
+            return False
+        elif string[0] == string[-1] == "'" and string[1:-1] in self.terminals:
+            return True
+        else:
+            raise GrammarParsingException(f"{string} is neither a terminal nor non-terminal")
 
     def isCFG(self) -> bool:
         for production in self.productions:

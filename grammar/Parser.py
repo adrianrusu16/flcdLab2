@@ -11,6 +11,7 @@ class Parser:
         self.table = {}
         self.constructFirst()
         self.constructFollow()
+        self.constructTable()
 
     def innerLoop(self, initialSet, items, additionalSet):
         copySet = initialSet
@@ -53,11 +54,90 @@ class Parser:
                         isSetChanged = True
 
     def constructFollow(self):
-        pass
+        self.follow[tuple([self.grammar.start])].add('E')
+        isSetChanged = False
+        for key, value in self.grammar.productions.items():
+            for v in value.right:
+                for i in range(len(v)):
+                    if self.grammar.isTerminal(v[i]):
+                        continue
+                    copySet = self.follow[tuple([v[i]])]
+                    if i < len(v) - 1:
+                        copySet = copySet.union(self.innerLoop(copySet, v[i + 1:], self.follow[key]))
+                    else:
+                        copySet = copySet.union(self.follow[key])
+
+                    if len(self.follow[tuple([v[i]])]) != len(copySet):
+                        self.follow[tuple([v[i]])] = copySet
+                        isSetChanged = True
+
+        while isSetChanged:
+            isSetChanged = False
+            for key, value in self.grammar.productions.items():
+                for v in value.right:
+                    for i in range(len(v)):
+                        if self.grammar.isTerminal(v[i]):
+                            continue
+                        copySet = self.follow[tuple([v[i]])]
+                        if i < len(v) - 1:
+                            copySet = copySet.union(self.innerLoop(copySet, v[i + 1:], self.follow[key]))
+                        else:
+                            copySet = copySet.union(self.follow[key])
+
+                        if len(self.follow[tuple([v[i]])]) != len(copySet):
+                            self.follow[tuple([v[i]])] = copySet
+                            isSetChanged = True
+
+    def constructTable(self):
+        nonTerminals = self.grammar.nonTerminals
+        terminals = self.grammar.terminals
+
+        for key, value in self.grammar.productions.items():
+            rowSymbol = key
+            for v in value.right:
+                rule = v[0]
+                for columnSymbol in terminals | ['E']:
+                    pair = (rowSymbol[0], columnSymbol)
+                    # rule 1 part 1
+                    if rule == columnSymbol and columnSymbol != 'E':
+                        self.table[pair] = v
+                    elif rule in nonTerminals and columnSymbol in self.first[tuple(rule)]:
+                        if pair not in self.table.keys():
+                            self.table[pair] = v
+                        else:
+                            print(pair)
+                            print("Grammar is not LL(1).")
+                            assert False
+                    else:
+                        if rule == 'E':
+                            for b in self.follow[rowSymbol]:
+                                if b == 'E':
+                                    b = '$'
+                                self.table[(rowSymbol[0], b)] = v
+                        else:
+                            # rule 1 part 2
+                            firsts = set()
+                            for symbol in self.grammar.productions[rowSymbol].right:
+                                if symbol in nonTerminals:
+                                    firsts = firsts.union(self.first[symbol])
+                            if 'E' in firsts:
+                                for b in self.follow[rowSymbol]:
+                                    if b == 'E':
+                                        b = '$'
+                                    if (rowSymbol[0], b) not in self.table.keys():
+                                        self.table[(rowSymbol[0], b)] = v
+
+        # rule 2
+        for t in terminals:
+            self.table[(t, t)] = ('pop', -1)
+
+        # rule 3
+        self.table[('$', '$')] = ('acc', -1)
 
 
 if __name__ == '__main__':
-    g = Grammar(fileName="g2.txt")
+    g = Grammar(fileName="g1.txt")
     p = Parser(g)
     print(p.first)
-
+    print(p.follow)
+    print(p.table)

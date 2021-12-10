@@ -19,7 +19,6 @@ class Grammar:
         if fileName is not None:
             self.fileName = fileName
             self.readGrammar()
-            print(self.isCFG())
 
     # Reads the given fa from a file, the fa must be in a json format
     def readGrammar(self):

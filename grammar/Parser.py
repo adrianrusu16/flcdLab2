@@ -1,4 +1,5 @@
 from ordered_set import OrderedSet
+from copy import deepcopy
 
 from grammar.Grammar import Grammar
 
@@ -17,37 +18,28 @@ class Parser:
         copySet = initialSet
         for i in range(len(items)):
             if not self.grammar.isTerminal(items[i]):
-                copySet = copySet.union(entry for entry in self.first[tuple([items[i]])] if entry != 'E')
+                copySet |= {entry for entry in self.first[tuple([items[i]])] if entry != 'E'}
                 if 'E' in self.first[tuple([items[i]])]:
                     if i < len(items) - 1:
                         continue
-                    copySet = copySet.union(additionalSet)
+                    copySet |= additionalSet
                     break
                 else:
                     break
             else:
-                copySet = copySet.union({items[i]})
+                copySet |= {items[i]}
                 break
 
         return copySet
 
     def constructFirst(self):
-        isSetChanged = False
-        for key, value in self.grammar.productions.items():
-            for v in value.right:
-                copySet = self.first[key]
-                copySet = copySet.union(self.innerLoop(copySet, v, ['E']))
-
-                if len(self.first[key]) != len(copySet):
-                    self.first[key] = copySet
-                    isSetChanged = True
-
+        isSetChanged = True
         while isSetChanged:
             isSetChanged = False
             for key, value in self.grammar.productions.items():
                 for v in value.right:
-                    copySet = self.first[key]
-                    copySet = copySet.union(self.innerLoop(copySet, v, ['E']))
+                    copySet = deepcopy(self.first[key])
+                    copySet |= self.innerLoop(copySet, v, ['E'])
 
                     if len(self.first[key]) != len(copySet):
                         self.first[key] = copySet
@@ -55,22 +47,7 @@ class Parser:
 
     def constructFollow(self):
         self.follow[tuple([self.grammar.start])].add('E')
-        isSetChanged = False
-        for key, value in self.grammar.productions.items():
-            for v in value.right:
-                for i in range(len(v)):
-                    if self.grammar.isTerminal(v[i]):
-                        continue
-                    copySet = self.follow[tuple([v[i]])]
-                    if i < len(v) - 1:
-                        copySet = copySet.union(self.innerLoop(copySet, v[i + 1:], self.follow[key]))
-                    else:
-                        copySet = copySet.union(self.follow[key])
-
-                    if len(self.follow[tuple([v[i]])]) != len(copySet):
-                        self.follow[tuple([v[i]])] = copySet
-                        isSetChanged = True
-
+        isSetChanged = True
         while isSetChanged:
             isSetChanged = False
             for key, value in self.grammar.productions.items():
@@ -78,11 +55,11 @@ class Parser:
                     for i in range(len(v)):
                         if self.grammar.isTerminal(v[i]):
                             continue
-                        copySet = self.follow[tuple([v[i]])]
+                        copySet = deepcopy(self.follow[tuple([v[i]])])
                         if i < len(v) - 1:
-                            copySet = copySet.union(self.innerLoop(copySet, v[i + 1:], self.follow[key]))
+                            copySet |= self.innerLoop(copySet, v[i + 1:], self.follow[key])
                         else:
-                            copySet = copySet.union(self.follow[key])
+                            copySet |= self.follow[key]
 
                         if len(self.follow[tuple([v[i]])]) != len(copySet):
                             self.follow[tuple([v[i]])] = copySet
@@ -120,7 +97,7 @@ class Parser:
                             for production in self.grammar.productions[rowSymbol].right:
                                 for symbol in production:
                                     if symbol in nonTerminals:
-                                        firsts = firsts | self.first[tuple([symbol])]
+                                        firsts |= self.first[tuple([symbol])]
                                 if 'E' in firsts:
                                     for b in self.follow[rowSymbol]:
                                         if b == 'E':

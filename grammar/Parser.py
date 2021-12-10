@@ -95,13 +95,13 @@ class Parser:
         for key, value in self.grammar.productions.items():
             rowSymbol = key
             for v in value.right:
-                rule = v[0]
+                rule = v[0].replace("'", "")
                 for columnSymbol in terminals | ['E']:
                     pair = (rowSymbol[0], columnSymbol)
                     # rule 1 part 1
                     if rule == columnSymbol and columnSymbol != 'E':
                         self.table[pair] = v
-                    elif rule in nonTerminals and columnSymbol in self.first[tuple(rule)]:
+                    elif rule in nonTerminals and "'"+columnSymbol+"'" in self.first[tuple(rule)]:
                         if pair not in self.table.keys():
                             self.table[pair] = v
                         else:
@@ -117,15 +117,16 @@ class Parser:
                         else:
                             # rule 1 part 2
                             firsts = set()
-                            for symbol in self.grammar.productions[rowSymbol].right:
-                                if symbol in nonTerminals:
-                                    firsts = firsts.union(self.first[symbol])
-                            if 'E' in firsts:
-                                for b in self.follow[rowSymbol]:
-                                    if b == 'E':
-                                        b = '$'
-                                    if (rowSymbol[0], b) not in self.table.keys():
-                                        self.table[(rowSymbol[0], b)] = v
+                            for production in self.grammar.productions[rowSymbol].right:
+                                for symbol in production:
+                                    if symbol in nonTerminals:
+                                        firsts = firsts | self.first[tuple([symbol])]
+                                if 'E' in firsts:
+                                    for b in self.follow[rowSymbol]:
+                                        if b == 'E':
+                                            b = '$'
+                                        if (rowSymbol[0], b) not in self.table.keys():
+                                            self.table[(rowSymbol[0], b)] = v
 
         # rule 2
         for t in terminals:

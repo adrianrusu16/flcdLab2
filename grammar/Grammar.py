@@ -1,94 +1,66 @@
 import json
 from collections import namedtuple, OrderedDict
 from typing import Optional
-from ordered_set import OrderedSet
-
-from GrammarParsingException import GrammarParsingException
-from Production import Production
 
 
 class Grammar:
 
-    def __init__(self, states=None, alphabet=None, initialState=None, transitions=None, fileName=None):
-        self.nonTerminals = OrderedSet(states) if states is not None else None
-        self.terminals = OrderedSet(alphabet) if alphabet is not None else None
-        self.start = initialState
-        self.productions = self.parseTransitions(transitions)
-        self.types = []
+    def __init__(self, non_terminals=None, terminals=None, starting_symbol=None, productions=None):
+        self.non_terminals = non_terminals
+        self.terminals = terminals
+        self.starting_symbol = starting_symbol
+        self.productions = OrderedDict() if productions is None else self.parse_productions(productions)
 
-        if fileName is not None:
-            self.fileName = fileName
-            self.readGrammar()
+    def from_file(self, file):
 
-    # Reads the given fa from a file, the fa must be in a json format
-    def readGrammar(self):
-        if self.fileName is None:
+        if file is None:
             return
-
         # Parses the json formatted fa and sets the attributes of the fa
-        with open(self.fileName) as f:
+        with open(file) as f:
             grammar = json.load(f, object_hook=grammarDecoder)
             self.__init__(*grammar)
 
-    def parseTransitions(self, transitions) -> Optional[OrderedDict]:
-        if transitions is None:
+    @staticmethod
+    def parse_productions(productions) -> Optional[OrderedDict]:
+        if productions is None:
             return None
 
         productionsDict = OrderedDict()
 
-        for transition in transitions:
-            left, right = transition.split("::=")
-
-            production = Production(
-                left=self.checkLeft(left.strip()),
-                right=self.checkRight(right.strip())
-            )
-
-            productionsDict[production.left] = production
+        for transition in productions:
+            key, value = transition.split("::=")
+            productionsDict[key.strip()] = value.strip().split(" | ")
 
         return productionsDict
 
-    def checkLeft(self, left: str):
-        return tuple(left.strip().split(' '))
+    def get_productions_for(self, non_terminal):
+        if non_terminal not in self.non_terminals:
+            return []
+        if non_terminal in self.productions.keys():
+            return self.productions[non_terminal]
 
-    def checkRight(self, right: str) -> OrderedSet:
-        rights = right.split("|")
+    def get_productions_of(self, character):
+        to_return = []
+        for key in self.productions.keys():
+            for production in self.productions[key]:
+                if character in production.split(" "):
+                    to_return.append((key, production))
+        return to_return
 
-        ops = OrderedSet()
-
-        for right in rights:
-            ops.add(tuple(right.strip().split(' ')))
-
-        return ops
-
-    def isTerminal(self, string: str):
-        if string in self.nonTerminals:
-            return False
-        elif string[0] == string[-1] == "'" and string[1:-1] in self.terminals:
-            return True
-        else:
-            raise GrammarParsingException(f"{string} is neither a terminal nor non-terminal")
-
-    def isCFG(self) -> bool:
+    def is_cfg(self):
         for production in self.productions:
-            if len(production) != 1:
+            if len(self.productions[production]) != 1:
                 return False
-
         return True
 
-    def printNonTerminals(self):
-        print(*self.nonTerminals, sep='\n')
+    def get_terminals(self):
+        return self.terminals
 
-    def printTerminals(self):
-        print(*self.terminals, sep='\n')
-
-    def printProductions(self, nonTerminal=None):
-        print(*self.productions.values(), sep='\n') if nonTerminal is None else self.printNonTerminalProduction(nonTerminal)
-
-    def printNonTerminalProduction(self, nonTerminal):
-        for production in self.productions:
-            if production.isOnlyNonTerminal(nonTerminal):
-                print(production)
+    def __str__(self):
+        return "nonTerminals: " + str(self.non_terminals) + "\n" + \
+               "terminals: " + str(self.terminals) + "\n" + \
+               "productions: " + str(self.productions) + "\n" + \
+               "startingSymbol: " + str(self.starting_symbol) + "\n"
 
 
 # Helper function for converting json to class
@@ -96,9 +68,8 @@ def grammarDecoder(grammarDict):
     return namedtuple('FiniteAutomata', grammarDict.keys())(*grammarDict.values())
 
 
-def main():
-    g = Grammar(fileName="g2.txt")
-
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    g = Grammar()
+    g.from_file("g1.txt")
+    print(g)
+    print(g.get_productions_of('B'))
